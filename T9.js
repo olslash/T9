@@ -3,11 +3,31 @@
 
 // populate a prefix tree
 
+
+function allPossibleCases(arr) {
+  if (arr.length === 0) {
+    return [];
+  } else if (arr.length === 1) {
+    return arr[0];
+  } else {
+    var result = [];
+    var allCasesOfRest = allPossibleCases(arr.slice(1)); // recur with the rest of array
+    for (var c in allCasesOfRest) {
+      for (var i = 0; i < arr[0].length; i++) {
+        result.push(arr[0][i] + allCasesOfRest[c]);
+      }
+    }
+    return result;
+  }
+}
+
 var dict = new TrieNode();
 var words = ['an', 'ant', 'all', 'alex', 'along', 'aloof', 'animal', 'animate',
   'allot', 'alloy', 'aloe', 'align', 'alight', 'and',
   'are', 'ate', 'bare', 'be', 'bear', 'bee', 'beard', 'berry', 'being'
 ];
+
+var resultsNode = $('#results');
 
 trie = new TrieNode(null);
 
@@ -15,9 +35,40 @@ words.forEach(function(word) {
   trie.insert(word);
 });
 
-$('.keyboard').change(function(e){
-  console.log(e.target.value);
-  console.log(trie.getClosestFullWords(e.target.value, 3));
+var keys = {
+  2: ['a', 'b', 'c'],
+  3: ['d', 'e', 'f'],
+  4: ['g', 'h', 'i'],
+  5: ['j', 'k', 'l'],
+  6: ['m', 'n', 'o'],
+  7: ['p', 'q', 'r', 's'],
+  8: ['t', 'u', 'v'],
+  9: ['w', 'x', 'y', 'z']
+};
+
+var searchArray = [];
+
+$('.keyboard').change(function(e) {
+  e.target.value.split('').forEach(function(e) {
+    if (e in keys) {
+      searchArray.push(keys[e]);
+    }
+  });
+ 
+  allPossibleCases(searchArray).forEach(function(e) {
+    var closest = trie.getClosestFullWords(e);
+    if (closest) {
+      var result = closest.reduce(function(accum, current) {
+        accum.push(current);
+        return accum;
+      }, []);
+
+      console.log(result);
+    }
+  });
+  // console.log(e.target.value);
+  // console.log(trie.getClosestFullWords(e.target.value, 3));
+  searchArray = [];
 });
 
 // groups of 3 letters per key
