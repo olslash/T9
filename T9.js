@@ -11,7 +11,7 @@ var keys = {
   9: ['w', 'x', 'y', 'z']
 };
 
-var searchArray = []; //key combos
+var searchKeys = []; //key combos
 var finalResult = [];
 
 function allPossibleCases(arr) {
@@ -35,13 +35,13 @@ $('.keyboard').on('input', function(e) {
   console.log("key " + e.target.value);
   e.target.value.split('').forEach(function(e) {
     if (e in keys) {
-      searchArray.push(keys[e]);
+      searchKeys.push(keys[e]);
     }
   });
 
-  console.log(allPossibleCases(searchArray));
+  console.log(allPossibleCases(searchKeys));
 
-  allPossibleCases(searchArray).forEach(function(thisCase) {
+  allPossibleCases(searchKeys).forEach(function(thisCase) {
     var closest = dict.getClosestFullWords(thisCase);
     if (closest) {
       var thisResult = closest.reduce(function(accum, word) {
@@ -63,9 +63,8 @@ $('.keyboard').on('input', function(e) {
     return a.length > b.length;
   });
 
-
   $('#results').html('');
   $('#results').append(finalResult.join(', '));
-  searchArray = [];
+  searchKeys = [];
   finalResult = [];
 });
