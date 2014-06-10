@@ -1,8 +1,45 @@
-// I input some letters (a partial word)
-// program outputs the first <=3 words below my partial
+//todo: if the parent is a full word, we should show it first 
+var dict = new TrieNode();
+var words;
 
-// populate a prefix tree
+$(document).ready(function() {
+  $.ajax({
+    type: "GET",
+    url: "dict/wordsEN.txt",
+    dataType: "text",
+    success: function(data) {
+      processData(data);
+    }
+  });
+});
 
+function processData(allText) {
+  words = allText.split('\n');
+
+  words.forEach(function(word) {
+    trie.insert(word);
+  });
+
+  console.log("Done parsing dictionary");
+}
+
+var resultsNode = $('#results');
+
+trie = new TrieNode(null);
+
+var keys = {
+  2: ['a', 'b', 'c'],
+  3: ['d', 'e', 'f'],
+  4: ['g', 'h', 'i'],
+  5: ['j', 'k', 'l'],
+  6: ['m', 'n', 'o'],
+  7: ['p', 'q', 'r', 's'],
+  8: ['t', 'u', 'v'],
+  9: ['w', 'x', 'y', 'z']
+};
+
+var searchArray = []; //key combos
+var finalResult = [];
 
 function allPossibleCases(arr) {
   if (arr.length === 0) {
@@ -21,32 +58,6 @@ function allPossibleCases(arr) {
   }
 }
 
-var dict = new TrieNode();
-var words = ['an', 'ant', 'all', 'alex', 'along', 'aloof', 'animal', 'animate',
-  'allot', 'alloy', 'aloe', 'align', 'alight', 'and',
-  'are', 'ate', 'bare', 'be', 'bear', 'bee', 'beard', 'berry', 'being'
-];
-
-var resultsNode = $('#results');
-
-trie = new TrieNode(null);
-
-words.forEach(function(word) {
-  trie.insert(word);
-});
-
-var keys = {
-  2: ['a', 'b', 'c'],
-  3: ['d', 'e', 'f'],
-  4: ['g', 'h', 'i'],
-  5: ['j', 'k', 'l'],
-  6: ['m', 'n', 'o'],
-  7: ['p', 'q', 'r', 's'],
-  8: ['t', 'u', 'v'],
-  9: ['w', 'x', 'y', 'z']
-};
-
-var searchArray = [];
 
 $('.keyboard').change(function(e) {
   e.target.value.split('').forEach(function(e) {
@@ -54,30 +65,36 @@ $('.keyboard').change(function(e) {
       searchArray.push(keys[e]);
     }
   });
- 
-  allPossibleCases(searchArray).forEach(function(e) {
-    var closest = trie.getClosestFullWords(e);
+
+  allPossibleCases(searchArray).forEach(function(thisCase) {
+    var closest = trie.getClosestFullWords(thisCase);
     if (closest) {
-      var result = closest.reduce(function(accum, current) {
-        accum.push(current);
+      var thisResult = closest.reduce(function(accum, word) {
+        accum.push(word);
         return accum;
       }, []);
 
-      console.log(result);
+      finalResult.push(thisResult);
     }
   });
-  // console.log(e.target.value);
-  // console.log(trie.getClosestFullWords(e.target.value, 3));
+
+  //for each subarray of finalResult, select the first word
+  finalResult = finalResult.reduce(function(accum, list) {
+    accum.push(list[0]);
+    return accum;
+  }, []);
+
+  finalResult = finalResult.sort(function(a, b) {
+    return a.length > b.length;
+  });
+
+
+  $('#results').html('');
+  $('#results').append(finalResult.join(', '));
   searchArray = [];
+  finalResult = [];
 });
 
-// groups of 3 letters per key
-// if I press 1 (a,b,c):
-// getClosestFullWords(oldword + a)
-// getClosestFullWords(oldword + b)
-// getClosestFullWords(oldword + c)
-
-//keep a good result from each
 
 // var nodeDia = 50;
 
