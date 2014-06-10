@@ -1,27 +1,3 @@
-//todo: if the parent is a full word, we should show it first 
-trie = new TrieNode(null);
-
-$(document).ready(function() {
-  $.ajax({
-    type: "GET",
-    url: "dict/wordsEN.txt",
-    dataType: "text",
-    success: function(data) {
-      processData(data);
-    }
-  });
-});
-
-function processData(allText) {
-  words = allText.split('\n');
-
-  words.forEach(function(word) {
-    trie.insert(word);
-  });
-
-  console.log("Done parsing dictionary");
-}
-
 var resultsNode = $('#results');
 
 var keys = {
@@ -63,7 +39,7 @@ $('.keyboard').change(function(e) {
   });
 
   allPossibleCases(searchArray).forEach(function(thisCase) {
-    var closest = trie.getClosestFullWords(thisCase);
+    var closest = dict.getClosestFullWords(thisCase);
     if (closest) {
       var thisResult = closest.reduce(function(accum, word) {
         accum.push(word);
