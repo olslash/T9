@@ -31,12 +31,15 @@ function allPossibleCases(arr) {
   }
 }
 
-$('.keyboard').change(function(e) {
+$('.keyboard').on('input', function(e) {
+  console.log("key " + e.target.value);
   e.target.value.split('').forEach(function(e) {
     if (e in keys) {
       searchArray.push(keys[e]);
     }
   });
+
+  console.log(allPossibleCases(searchArray));
 
   allPossibleCases(searchArray).forEach(function(thisCase) {
     var closest = dict.getClosestFullWords(thisCase);
