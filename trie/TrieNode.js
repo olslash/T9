@@ -23,6 +23,7 @@ Trie.prototype.insert = function(word, useFrequency) {
     for(i, len; i < len; i++) {
       var thisLetter = word[i];
       var thisKey = keys[thisLetter];
+
       if(node.children.hasOwnProperty(thisKey)) {
         node = node.children[thisKey];
       } else { break; }
@@ -43,6 +44,7 @@ Trie.prototype.insert = function(word, useFrequency) {
   function insertWordIntoListByFrequency(list, word, useFrequency) {
     var wordToInsert = [word, useFrequency];
     var wordsLength = list.length;
+
     if(wordsLength === 0) {
       //handle case where this node has no words yet
       list.push(wordToInsert);
@@ -65,9 +67,41 @@ Trie.prototype.insert = function(word, useFrequency) {
   }
 };
 
-Trie.prototype.getSuggestions = function(keyString, results, suggestionDepth) {
-    // if suggestionDeth is >0 we should traverse down that many levels and 
-    // suggest longer words.
-    
+Trie.prototype.getSuggestions = function(keyString, suggestionDepth) {  
+  // if suggestionDeth is >0 we should traverse down every possible branch,
+  // adding words to the result that are on nodes at max depth and depths
+  // lower than max.
+  var result = [];
+  // traverse the tree by digits in the keystring
+  var node = this;
+  for(var i = 0; i < keyString.length; i++) {
+    var thisKey = keyString[i];
+    node = node.children[thisKey];
+  }
 
+  result = result.concat(node.words.map(function(word) {
+    return word[0];
+  }));
+  console.log(node);
+  return suggestionDepth > 0 ? result.concat(getDeeperSuggestions(node)) : result;
+
+  function getDeeperSuggestions(root) {
+    var result = [];
+    traverse(root, 0);
+
+    function traverse(root, depth) {
+      if(depth <= suggestionDepth && depth !== 0) {
+        result = result.concat(root.words.map(function(word) {
+          return word[0];
+        }));
+      }
+      
+      if(depth === suggestionDepth) { return; }
+
+      for(var childKey in root.children) {
+        traverse(root.children[childKey], depth + 1);
+      }
+    }
+    return result;
+  }
 };
