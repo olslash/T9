@@ -31,6 +31,7 @@ describe('Trie', function () {
       t.insert('apq', 300);
       t.insert('apb', 100);
       t.insert('appo', 10000);
+      t.insert('appox', 10000);
     });
 
 
@@ -69,12 +70,15 @@ describe('Trie', function () {
       expect(t.children['2'].children['7'].children['7'].words.length).to.eql(2);
     });
 
-    it('should suggest words by their frequency values', function() {
-      expect(t.getSuggestions('2'));
-      expect(t.getSuggestions('27'));
-      expect(t.getSuggestions('272'));
-      expect(t.getSuggestions('277'));
-      expect(t.getSuggestions('2776'));
+    it('should suggest words at various depths`', function() {
+      // t.getSuggestions('277');
+      // expect(t.getSuggestions('2'));
+      // expect(t.getSuggestions('27'));
+      expect(t.getSuggestions('272')).to.eql(['apb']);
+      expect(t.getSuggestions('277')).to.eql(['apq', 'app']);
+      expect(t.getSuggestions('277', 1)).to.eql(['apq', 'app', 'appo']);
+      expect(t.getSuggestions('277', 2)).to.eql(['apq', 'app', 'appo', 'appox']);
+      expect(t.getSuggestions('2776')).to.eql(['appo']);
     });
   });
 });
