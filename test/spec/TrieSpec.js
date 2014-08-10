@@ -64,7 +64,7 @@ describe('Trie', function () {
       t.insert('a', 750);
       t.insert('app', 100);
       t.insert('app', 1000);
-      console.log(t);
+
       expect(t.children['2'].words[0]).not.to.eql(['a', 750]);
       expect(t.children['2'].words.length).to.eql(5);
       expect(t.children['2'].children['7'].children['7'].words.length).to.eql(2);
