@@ -82,7 +82,7 @@ Trie.prototype.getSuggestions = function(keyString, suggestionDepth) {
   result = result.concat(node.words.map(function(word) {
     return word[0];
   }));
-  console.log(node);
+
   return suggestionDepth > 0 ? result.concat(getDeeperSuggestions(node)) : result;
 
   function getDeeperSuggestions(root) {
