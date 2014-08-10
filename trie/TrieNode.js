@@ -15,11 +15,18 @@ var Trie = function() {
 };
 
 Trie.prototype.insert = function(word, useFrequency) {
+  // Traverse the tree to the node where the word should be inserted. If any
+  // needed nodes do not exist along the way, they are created.
   var nodeToAddWord = traverseAddingNodes(this);
+
+  // Insert the word into the wordlist of the node returned above. Use the
+  // data provided (frequency of use in English text) to place the word in the 
+  // correct position, so that we can recommend more common words first.
   insertWordIntoListByFrequency(nodeToAddWord.words, word, useFrequency);
 
   function traverseAddingNodes(node) {
     var i = 0, len = word.length;
+    // Traverse the tree's existing nodes as far as possible.
     for(i, len; i < len; i++) {
       var thisLetter = word[i];
       var thisKey = keys[thisLetter];
@@ -29,8 +36,9 @@ Trie.prototype.insert = function(word, useFrequency) {
       } else { break; }
     }
     
-    // if i is still less than len when we reach this point, continue, adding
-    // nodes as we go.
+    // If we reach this point and we still aren't at the node we want, it means
+    // that other words matching this key pattern haven't been inserted before.
+    // Continue, this time adding the required nodes as we go.
     for(i, len; i < len; i++) {
       thisLetter = word[i];
       thisKey = keys[thisLetter];
@@ -42,47 +50,54 @@ Trie.prototype.insert = function(word, useFrequency) {
   }
 
   function insertWordIntoListByFrequency(list, word, useFrequency) {
-    var wordToInsert = [word, useFrequency];
+    var wordToInsert = [word, useFrequency]; // Store word in a tuple.
     var wordsLength = list.length;
 
     if(wordsLength === 0) {
-      //handle case where this node has no words yet
+      // Handle the case where this node has no words yet
       list.push(wordToInsert);
     } else {
-      // otherwise, find where to insert based on useFrequency
+      // Find where to insert this word among others, based on its 
+      // frequency property.
       for(var i = 0; i < wordsLength; i++) {
         var comparedFrequency = list[i][1];
         var insertFrequency = wordToInsert[1];
 
         if(insertFrequency >= comparedFrequency) {
-          // if i see a word with lower useFrequency than me, insert before it.
+          // If i see a word with lower useFrequency than mine, insert before it.
           list.splice(i, 0, wordToInsert);
           return;
         }
       }
-      // if i've reached here, i've looked at the last letter and i'm less than it,
-      // so put me at the end of the list.
+      // if we've reached here, we've looked at the last word on this node and 
+      // our word's frequency is less than it. 
+      // Put my word at the end of the list.
       list.splice(i + 1, 0, wordToInsert);
     }
   }
 };
 
 Trie.prototype.getSuggestions = function(keyString, suggestionDepth) {  
-  // if suggestionDeth is >0 we should traverse down every possible branch,
-  // adding words to the result that are on nodes at max depth and depths
-  // lower than max.
+  // Traverse the tree based on the key digits in keyString, to find the node
+  // where relevant words are stored.
   var result = [];
-  // traverse the tree by digits in the keystring
   var node = this;
+
   for(var i = 0; i < keyString.length; i++) {
     var thisKey = keyString[i];
     node = node.children[thisKey];
   }
 
+  // Add all the words to the result.
   result = result.concat(node.words.map(function(word) {
     return word[0];
   }));
 
+  // If suggestionDeth is >0, the caller is asking for recommendations of 
+  // words longer than the number of keys pressed. 
+  // We traverse down every possible branch from the point we previously arrived
+  // at, adding words to the result as we go and stopping when we reach the
+  // specified depth.
   return suggestionDepth > 0 ? result.concat(getDeeperSuggestions(node)) : result;
 
   function getDeeperSuggestions(root) {
