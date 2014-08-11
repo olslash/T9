@@ -21,21 +21,21 @@ describe('Trie', function () {
     beforeEach(function() {
       t = new Trie();
 
+      t.insert('appox', 10000);
+      t.insert('c', 300);
+      t.insert('apb', 100);
+      t.insert('ap', 100);
+      t.insert('appo', 20000);
+      t.insert('appoz', 20000);
       t.insert('a', 500);
       t.insert('b', 100);
-      t.insert('c', 300);
-      t.insert('c', 700);
-      t.insert('c', 200);
-      t.insert('ap', 100);
-      t.insert('app', 100);
-      t.insert('apq', 300);
-      t.insert('apb', 100);
-      t.insert('appo', 20000);
       t.insert('appa', 10000);
-      t.insert('appox', 10000);
+      t.insert('c', 700);
       t.insert('appoy', 1000);
-      t.insert('appoz', 20000);
+      t.insert('c', 200);
       t.insert('appow', 2000);
+      t.insert('apq', 300);
+      t.insert('app', 100);
     });
 
 
