@@ -30,8 +30,12 @@ describe('Trie', function () {
       t.insert('app', 100);
       t.insert('apq', 300);
       t.insert('apb', 100);
-      t.insert('appo', 10000);
+      t.insert('appo', 20000);
+      t.insert('appa', 10000);
       t.insert('appox', 10000);
+      t.insert('appoy', 1000);
+      t.insert('appoz', 20000);
+      t.insert('appow', 2000);
     });
 
 
@@ -43,7 +47,7 @@ describe('Trie', function () {
       expect(t.children['2'].children['7'].children['7']
         .words[0]).to.eql(['apq', 300]);
       expect(t.children['2'].children['7'].children['7'].children['6']
-        .words[0]).to.eql(['appo', 10000]);
+        .words[0]).to.eql(['appo', 20000]);
     });
 
     it('should order words descending by their frequency value', 
@@ -70,14 +74,11 @@ describe('Trie', function () {
       expect(t.children['2'].children['7'].children['7'].words.length).to.eql(2);
     });
 
-    it('should suggest words at various depths`', function() {
-      // t.getSuggestions('277');
-      // expect(t.getSuggestions('2'));
-      // expect(t.getSuggestions('27'));
+    it('should suggest words at various depths`', function() {     
       expect(t.getSuggestions('272')).to.eql(['apb']);
       expect(t.getSuggestions('277')).to.eql(['apq', 'app']);
-      expect(t.getSuggestions('277', 1)).to.eql(['apq', 'app', 'appo']);
-      expect(t.getSuggestions('277', 2)).to.eql(['apq', 'app', 'appo', 'appox']);
+      expect(t.getSuggestions('277', 1)).to.eql(['apq', 'app', 'appo', 'appa']);
+      expect(t.getSuggestions('277', 2)).to.eql(['apq', 'app', 'appo', 'appa', 'appoz', 'appox', 'appow', 'appoy']);
       expect(t.getSuggestions('2776')).to.eql(['appo']);
     });
   });

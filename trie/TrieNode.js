@@ -89,34 +89,61 @@ Trie.prototype.getSuggestions = function(keyString, suggestionDepth) {
   }
 
   // Add all the words to the result.
-  result = result.concat(node.words.map(function(word) {
-    return word[0];
+  result = result.concat(node.words.map(function(wordTuple) {
+    return wordTuple[0];
   }));
 
   // If suggestionDeth is >0, the caller is asking for recommendations of 
   // words longer than the number of keys pressed. 
-  // We traverse down every possible branch from the point we previously arrived
-  // at, adding words to the result as we go and stopping when we reach the
-  // specified depth.
-  return suggestionDepth > 0 ? result.concat(getDeeperSuggestions(node)) : result;
+  return suggestionDepth > 0 ?
+    result.concat(getDeeperSuggestions(node, suggestionDepth)) :
+    result;
 
-  function getDeeperSuggestions(root) {
-    var result = [];
+  function getDeeperSuggestions(root, maxDepth) {
+    // We traverse down every possible branch from the result node (the node 
+    // corresponding to the keypad entry), saving words we see as we go and 
+    // stopping when we reach the specified depth.
+    
+    // deepSuggestions is an array with (maxDepth) subarrays.
+    // Each of the subarrays will be one depth level's suggestions.
+    var deepSuggestions = [];
+    while(deepSuggestions.length < maxDepth) {
+      deepSuggestions.push([]);
+    }
+
+    // The traverse function (below) fills deepSuggestions with results.
     traverse(root, 0);
 
+    // Each level is sorted individually, because we want shallower results to 
+    // always be suggested first.
+    deepSuggestions = deepSuggestions.map(function(level) {
+      return level.sort(function(a, b) {
+        return b[1] - a[1];
+      });
+    });
+
+    // At this point, deepSuggestions is an array of arrays (one for each level 
+    // of depth). Each of those subarrays contains word tuples.
+    return deepSuggestions.reduce(function(result, level) {
+      // Merge each level into a single flat array.
+      return result.concat(level.map(function(wordTuple) {
+        // Keep only the word itself, discarding the frequency number
+        return wordTuple[0];
+      }));
+    }, []);
+      
     function traverse(root, depth) {
-      if(depth <= suggestionDepth && depth !== 0) {
-        result = result.concat(root.words.map(function(word) {
-          return word[0];
-        }));
+      // Basic tree traversal, collecting results up to the required depth.
+      if(depth <= maxDepth && depth !== 0) { // Result already contains depth 0
+        var d = depth - 1;
+        deepSuggestions[d] = deepSuggestions[d].concat(root.words);
       }
       
-      if(depth === suggestionDepth) { return; }
+      if(depth === maxDepth) { return; }
 
       for(var childKey in root.children) {
         traverse(root.children[childKey], depth + 1);
       }
-    }
-    return result;
+    }    
   }
 };
