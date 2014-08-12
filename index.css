@@ -1,10 +1,10 @@
-.text form {
+/*.text form {
   position: relative;
   top: 50%;
  	-webkit-transform: translateY(-50%);
   	-ms-transform: translateY(-50%);
   	transform: translateY(-50%);
-}
+}*/
 
 #results {
 	font-weight: bold;
@@ -15,7 +15,7 @@ section {
 	max-width: 700px;
 	background: #CCCCCC;
 	margin: 0 auto 1em;
-	height: 140px;
+	height: auto;
 	border-radius: .5em;
 	text-align: center;
 }
