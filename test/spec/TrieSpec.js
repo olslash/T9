@@ -73,13 +73,23 @@ describe('Trie', function () {
       expect(t.children['2'].words.length).to.eql(5);
       expect(t.children['2'].children['7'].children['7'].words.length).to.eql(2);
     });
-
+    
     it('should suggest words at various depths`', function() {     
       expect(t.getSuggestions('272')).to.eql(['apb']);
       expect(t.getSuggestions('277')).to.eql(['apq', 'app']);
       expect(t.getSuggestions('277', 1)).to.eql(['apq', 'app', 'appo', 'appa']);
       expect(t.getSuggestions('277', 2)).to.eql(['apq', 'app', 'appo', 'appa', 'appoz', 'appox', 'appow', 'appoy']);
       expect(t.getSuggestions('2776')).to.eql(['appo']);
+    });
+
+    xit('should not throw errors if there is no existing path', function() {
+      expect(t.getSuggestions('22222')).to.eql([]);
+      // right now it's giving a bunch of earlier ones?
+    });
+
+    it('should automatically dig to build results if there are no matches', function() {
+      t.insert('approximately', 1);
+      expect(t.getSuggestions('2777', 2)).to.eql(['approximately']);
     });
   });
 });

@@ -17,6 +17,7 @@ var Trie = function() {
 Trie.prototype.insert = function(word, useFrequency) {
   // Traverse the tree to the node where the word should be inserted. If any
   // needed nodes do not exist along the way, they are created.
+  // console.log('insrt', word, useFrequency);
   var nodeToAddWord = traverseAddingNodes(this);
 
   // Insert the word into the wordlist of the node returned above. Use the
@@ -59,6 +60,7 @@ Trie.prototype.insert = function(word, useFrequency) {
     } else {
       // Find where to insert this word among others, based on its 
       // frequency property.
+     // todo: this could be faster with binary search.
       for(var i = 0; i < wordsLength; i++) {
         var comparedFrequency = list[i][1];
         var insertFrequency = wordToInsert[1];
@@ -85,7 +87,8 @@ Trie.prototype.getSuggestions = function(keyString, suggestionDepth) {
 
   for(var i = 0; i < keyString.length; i++) {
     var thisKey = keyString[i];
-    node = node.children[thisKey];
+      // if(!node.children.hasOwnProperty(thisKey)) { break; }
+      node = node.children[thisKey];
   }
 
   // Add all the words to the result.
@@ -93,7 +96,7 @@ Trie.prototype.getSuggestions = function(keyString, suggestionDepth) {
     return wordTuple[0];
   }));
 
-  // If suggestionDeth is >0, the caller is asking for recommendations of 
+  // If suggestionDeth is > 0, the caller is asking for recommendations of 
   // words longer than the number of keys pressed. 
   return suggestionDepth > 0 ?
     result.concat(getDeeperSuggestions(node, suggestionDepth)) :
@@ -113,9 +116,10 @@ Trie.prototype.getSuggestions = function(keyString, suggestionDepth) {
 
     // The traverse function (below) fills deepSuggestions with results.
     traverse(root, 0);
-
-    // Each level is sorted individually, because we want shallower results to 
-    // always be suggested first.
+    // Each level is sorted individually, because we want shallower results to
+    // always be suggested first. (this is an implementation detail and
+    // there's a possibility sorting everything together might give
+    // better results in practice.)
     deepSuggestions = deepSuggestions.map(function(level) {
       return level.sort(function(a, b) {
         return b[1] - a[1];
