@@ -3,7 +3,7 @@
   var resultsDiv = document.getElementById('results');
   keyboard.addEventListener('input', function(e) {
     // console.log(e.target.value);
-    resultsDiv.innerHTML = dict.getSuggestions(e.target.value, 2);
+    resultsDiv.innerHTML = dict.getSuggestions(e.target.value, 5);
   });  
 
 })();
